@@ -15,6 +15,7 @@ import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.domain.geo.Metrics;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +56,7 @@ public class GeoCalcuApplication implements CommandLineRunner {
 
     @RequestMapping("/mysql")
     public String mysql() {
+        number = number >= 100 ? 0 : number;
         latitude = latitude.add(fetch);
         longituden = longituden.add(fetch);
 
@@ -78,30 +80,30 @@ public class GeoCalcuApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        StopWatch dataSync = new StopWatch("dataSync");
-        //查询数据库全部数据
-        dataSync.start();
-        points = kinderGartenRepo.findAll();
-        dataSync.stop();
-
-        dataSync.start();
-        List<RedisGeoCommands.GeoLocation<String>> locations = new ArrayList<>();
-        //导入至redis中
-        for (KinderGarten kinderGarten : points) {
-            Point point = new Point(Double.valueOf(kinderGarten.getLongitude().toString()),
-                    Double.valueOf(kinderGarten.getLatitude().toString()));
-            RedisGeoCommands.GeoLocation<String> location = new RedisGeoCommands.GeoLocation<>(String.valueOf(kinderGarten.getId()), point);
-            locations.add(location);
-            if (locations.size() == 500) {
-                redisTemplate.opsForGeo().add("geo:key", locations);
-                locations.clear();
-            }
-        }
-        if (locations.size() > 0) {
-            redisTemplate.opsForGeo().add("geo:key", locations);
-        }
-        dataSync.stop();
-        System.out.println(dataSync.prettyPrint());
+//        StopWatch dataSync = new StopWatch("dataSync");
+//        //查询数据库全部数据
+//        dataSync.start();
+//        points = kinderGartenRepo.findAll();
+//        dataSync.stop();
+//
+//        dataSync.start();
+//        List<RedisGeoCommands.GeoLocation<String>> locations = new ArrayList<>();
+//        //导入至redis中
+//        for (KinderGarten kinderGarten : points) {
+//            Point point = new Point(Double.valueOf(kinderGarten.getLongitude().toString()),
+//                    Double.valueOf(kinderGarten.getLatitude().toString()));
+//            RedisGeoCommands.GeoLocation<String> location = new RedisGeoCommands.GeoLocation<>(String.valueOf(kinderGarten.getId()), point);
+//            locations.add(location);
+//            if (locations.size() == 500) {
+//                redisTemplate.opsForGeo().add("geo:key", locations);
+//                locations.clear();
+//            }
+//        }
+//        if (locations.size() > 0) {
+//            redisTemplate.opsForGeo().add("geo:key", locations);
+//        }
+//        dataSync.stop();
+//        System.out.println(dataSync.prettyPrint());
 
 
     }
@@ -109,7 +111,7 @@ public class GeoCalcuApplication implements CommandLineRunner {
 
     @RequestMapping("/memory")
     public String memory() {
-
+        number = number >= 100 ? 0 : number;
         latitude = latitude.add(fetch);
         longituden = longituden.add(fetch);
         GeoPoint geoPointCurrent = new GeoPoint(Double.valueOf(longituden.toString()), Double.valueOf(latitude.toString()));
@@ -143,6 +145,7 @@ public class GeoCalcuApplication implements CommandLineRunner {
 
     @RequestMapping("/redis")
     public String redis() {
+        number = number >= 100 ? 0 : number;
         latitude = latitude.add(fetch);
         longituden = longituden.add(fetch);
         Point point1 = new Point(Double.valueOf(longituden.toString()), Double.valueOf(latitude.toString()));
@@ -169,6 +172,6 @@ public class GeoCalcuApplication implements CommandLineRunner {
             System.out.println(totalMillis / 100);
         }
 
-        return "{}";
+        return String.valueOf(results.getContent().size());
     }
 }
