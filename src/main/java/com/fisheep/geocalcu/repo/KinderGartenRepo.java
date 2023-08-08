@@ -11,7 +11,7 @@ public interface KinderGartenRepo extends JpaRepository<KinderGarten, Integer> {
 
     @Query(value = "SELECT id, name,address,administrative_code ,longitude,latitude," +
             "ST_Distance_Sphere ( POINT ( longitude, latitude ), POINT ( ?1, ?2 ) ) AS distance " +
-            "FROM kindergarten HAVING distance < ?3",nativeQuery = true)
+            "FROM kindergarten HAVING distance < ?3 order by distance",nativeQuery = true)
     List<KinderGarten> findByDistance(BigDecimal longitude, BigDecimal latitude, Double distance);
 
 }

@@ -5,6 +5,7 @@ import com.fisheep.geocalcu.bean.KinderGarten;
 import com.fisheep.geocalcu.repo.KinderGartenRepo;
 import com.fisheep.geocalcu.util.GeofencingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.geo.Circle;
@@ -24,7 +25,7 @@ import java.util.List;
 @SpringBootApplication
 @RestController
 @RequestMapping("/calcu")
-public class GeoCalcuApplication {
+public class GeoCalcuApplication implements CommandLineRunner {
 
     private static BigDecimal latitude = new BigDecimal("38.897560");
     private static BigDecimal longituden = new BigDecimal("106.546840");
@@ -88,6 +89,26 @@ public class GeoCalcuApplication {
                 .includeCoordinates()
                 .sortAscending();
         GeoResults<RedisGeoCommands.GeoLocation<String>> results = redisTemplate.opsForGeo().radius("geo:key", circle, args);
-        return "{}";
+        return String.valueOf(results.getContent().size());
+    }
+
+    @Override
+    public void run(String... args) {
+
+//        List<RedisGeoCommands.GeoLocation<String>> locations = new ArrayList<>();
+//        //导入至redis中
+//        for (KinderGarten kinderGarten : points) {
+//            Point point = new Point(Double.valueOf(kinderGarten.getLongitude().toString()),
+//                    Double.valueOf(kinderGarten.getLatitude().toString()));
+//            RedisGeoCommands.GeoLocation<String> location = new RedisGeoCommands.GeoLocation<>(String.valueOf(kinderGarten.getId()), point);
+//            locations.add(location);
+//            if (locations.size() == 500) {
+//                redisTemplate.opsForGeo().add("geo:key", locations);
+//                locations.clear();
+//            }
+//        }
+//        if (locations.size() > 0) {
+//            redisTemplate.opsForGeo().add("geo:key", locations);
+//        }
     }
 }
